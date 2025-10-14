@@ -4,21 +4,29 @@ A full-stack RAG (Retrieval Augmented Generation) application that allows users 
 
 ## 🤖 AI Agent Integration
 
-**Any AI agent can now connect to our MCP server and query the knowledge base!**
+**Any AI agent can connect to our MCP server and query the knowledge base!**
 
-The MCP (Model Context Protocol) server exposes a standardized interface that allows any MCP-compatible AI agent (Claude Desktop, Cline, Roo-Cline, custom agents, etc.) to:
+The MCP (Model Context Protocol) server exposes a standardized interface that allows any MCP-compatible AI agent to:
 - Query your ingested documents using natural language
 - Retrieve relevant context from your knowledge base
 - Filter results by project and user
 - Access structured metadata with relevance scores
 
-Simply configure your AI agent to connect to `http://localhost:3000` and start querying your knowledge base!
+### Compatible AI Agents
 
-### Supported AI Agents
-- **Claude Desktop** - Anthropic's desktop application with MCP support
-- **Cline** - VS Code extension for AI-powered development
-- **Roo-Cline** - Enhanced Cline fork with additional features
-- **Custom MCP Clients** - Any client implementing the MCP protocol
+Our MCP server works seamlessly with popular AI coding assistants and agents:
+
+- **Claude Desktop** - Anthropic's official desktop application
+- **Claude Code** - Anthropic's VS Code extension for AI-powered development
+- **Cursor** - AI-first code editor
+- **Cline** - Autonomous coding agent in VS Code
+- **Roo-Cline** - Enhanced fork of Cline with additional capabilities
+- **Windsurf** - AI-powered development environment
+- **Continue** - Open-source AI code assistant
+- **Zed AI** - High-performance AI code editor
+- **Any custom MCP client** - Build your own using the MCP SDK
+
+Simply configure your favorite AI agent to connect via the MCP protocol and start querying your knowledge base!
 
 ### Example MCP Query
 ```json
@@ -26,7 +34,7 @@ Simply configure your AI agent to connect to `http://localhost:3000` and start q
   "tool": "query_knowledge_base",
   "arguments": {
     "query": "What are the main requirements for the authentication feature?",
-    "project_id": "2",
+    "project_name": "Enterprise AI Project",
     "limit": 10
   }
 }
@@ -37,9 +45,11 @@ Simply configure your AI agent to connect to `http://localhost:3000` and start q
 ```mermaid
 graph LR
     subgraph "AI Agents"
-        CLAUDE[Claude Desktop]
-        CLINE[Cline/Roo-Cline]
-        CUSTOM[Custom MCP Client]
+        CLAUDE[Claude Desktop/Code]
+        CURSOR[Cursor]
+        CLINE[Cline/Windsurf]
+        CONTINUE[Continue/Zed AI]
+        CUSTOM[Custom Clients]
     end
 
     subgraph "MCP Server"
@@ -51,7 +61,9 @@ graph LR
     end
 
     CLAUDE -->|MCP Protocol| MCP
+    CURSOR -->|MCP Protocol| MCP
     CLINE -->|MCP Protocol| MCP
+    CONTINUE -->|MCP Protocol| MCP
     CUSTOM -->|MCP Protocol| MCP
     MCP -->|Query & Retrieve| CHROMA
 ```
@@ -65,9 +77,10 @@ graph TB
     end
 
     subgraph "AI Agents"
-        CLAUDE[Claude Desktop]
-        CLINE[Cline/Roo-Cline]
-        CUSTOM[Custom MCP Client]
+        CLAUDE[Claude Desktop/Code]
+        CURSOR[Cursor]
+        CLINE[Cline/Windsurf]
+        OTHERS[Continue/Zed/Custom]
     end
 
     subgraph "API Layer"
@@ -90,8 +103,9 @@ graph TB
 
     UI -->|HTTP/REST| API
     CLAUDE -->|MCP Protocol| MCP
+    CURSOR -->|MCP Protocol| MCP
     CLINE -->|MCP Protocol| MCP
-    CUSTOM -->|MCP Protocol| MCP
+    OTHERS -->|MCP Protocol| MCP
     API -->|SQL| PG
     API -->|Vector Operations| CHROMA
     API -->|Generate Embeddings| GOOGLE
@@ -606,11 +620,11 @@ graph LR
 ## Key Features
 
 ### AI Agent Integration (MCP)
-- **Universal Compatibility**: Any MCP-compatible AI agent can connect
+- **Universal Compatibility**: Works with Claude Desktop, Claude Code, Cursor, Cline, Windsurf, Continue, Zed AI, and any MCP-compatible agent
 - **Standardized Protocol**: Model Context Protocol (MCP) implementation
 - **Real-time Querying**: Natural language queries to your knowledge base
 - **Context Enrichment**: AI agents get relevant context from your documents
-- **Multi-Agent Support**: Claude Desktop, Cline, Roo-Cline, and custom clients
+- **Multi-Agent Support**: Multiple AI agents can connect and query simultaneously
 
 ### Document Processing
 - **PDF Text Extraction**: Uses LangChain's PDFLoader

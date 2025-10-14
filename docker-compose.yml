@@ -1,0 +1,122 @@
+
+services:
+  # PostgreSQL Database for API
+  postgres:
+    image: postgres:16-alpine
+    container_name: contextual-kb-postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: master123
+      POSTGRES_DB: fastify_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d fastify_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - contextual-kb-network
+
+  # ChromaDB for vector storage
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: contextual-kb-chromadb
+    ports:
+      - "8001:8000"
+    volumes:
+      - chromadb_data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - ANONYMIZED_TELEMETRY=FALSE
+    networks:
+      - contextual-kb-network
+
+  # API Service
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: contextual-kb-api
+    ports:
+      - "5001:5001"
+    environment:
+      NODE_ENV: development
+      LOG_LEVEL: debug
+      API_HOST: 0.0.0.0
+      API_PORT: 5001
+      DATABASE_URL: postgresql://admin:master123@postgres:5432/fastify_db?schema=public
+      APP_JWT_SECRET: y4kXCSAHfluj3iOfd8ua3atrCLeYOFTu
+      CHROMADB_URL: http://chromadb:8000
+      CHROMADB_COLLECTION_NAME: contextual_kb_documents
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      chromadb:
+        condition: service_started
+    networks:
+      - contextual-kb-network
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+      - ./api/uploads:/app/uploads
+
+  # MCP Server
+  mcp-server:
+    build:
+      context: ./mcp-server
+      dockerfile: Dockerfile
+    container_name: contextual-kb-mcp-server
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      MCP_PORT: 3000
+      CHROMADB_HOST: chromadb
+      CHROMADB_PORT: 8000
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+    depends_on:
+      - chromadb
+    networks:
+      - contextual-kb-network
+    volumes:
+      - ./mcp-server:/app
+      - /app/node_modules
+    restart: on-failure
+
+  # UI (Next.js)
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:5001
+        NEXT_PUBLIC_MCP_URL: http://localhost:3000
+    container_name: contextual-kb-ui
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: http://localhost:5001
+      NEXT_PUBLIC_MCP_URL: http://localhost:3000
+    depends_on:
+      - api
+      - mcp-server
+    networks:
+      - contextual-kb-network
+    volumes:
+      - ./ui:/app
+      - /app/node_modules
+      - /app/.next
+
+networks:
+  contextual-kb-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  chromadb_data:

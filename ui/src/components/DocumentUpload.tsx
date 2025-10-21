@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, FileText, Loader2 } from 'lucide-react';
+import { Upload, Loader2 } from 'lucide-react';
 
 interface DocumentUploadProps {
   projectId: number;
@@ -42,8 +42,8 @@ export default function DocumentUpload({ projectId, onUploadSuccess }: DocumentU
         }
 
         onUploadSuccess();
-      } catch (err: any) {
-        setError(err.message || 'Failed to upload file');
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to upload file');
       } finally {
         setUploading(false);
       }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { projectService, Project, CreateProjectDto } from '@/lib/project';
+import { projectService, Project } from '@/lib/project';
 import Navbar from '@/components/Navbar';
 import Modal from '@/components/Modal';
 import { Plus, Edit, Trash2, FolderOpen, Loader2 } from 'lucide-react';
@@ -37,7 +37,7 @@ export default function ProjectsPage() {
       setIsLoading(true);
       const data = await projectService.getAllProjects();
       setProjects(data);
-    } catch (err) {
+    } catch {
       setError('Failed to load projects');
     } finally {
       setIsLoading(false);
@@ -70,7 +70,7 @@ export default function ProjectsPage() {
       setShowDeleteModal(false);
       setSelectedProject(null);
       loadProjects();
-    } catch (err) {
+    } catch {
       setError('Failed to delete project');
     } finally {
       setIsSubmitting(false);

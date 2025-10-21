@@ -1,11 +1,8 @@
-  FROM chromadb/chroma:latest
+FROM chromadb/chroma:latest
 
-  # ChromaDB environment variables
-  ENV IS_PERSISTENT=TRUE
-  ENV PERSIST_DIRECTORY=/chroma/chroma
-  ENV ANONYMIZED_TELEMETRY=FALSE
-  
-  # Create volume for persistence
-  VOLUME ["/chroma/chroma"]
-  
-  EXPOSE 8000
+# ChromaDB environment variables
+ENV IS_PERSISTENT=TRUE
+ENV PERSIST_DIRECTORY=/chroma/chroma
+ENV ANONYMIZED_TELEMETRY=FALSE
+
+EXPOSE 8000

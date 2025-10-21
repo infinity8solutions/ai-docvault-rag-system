@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { projectService, Project } from '@/lib/project';
@@ -36,6 +36,7 @@ export default function ProjectDetailPage() {
     if (isAuthenticated && !isNaN(projectId)) {
       loadProject();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, projectId]);
 
   const loadProject = async () => {
@@ -48,7 +49,7 @@ export default function ProjectDetailPage() {
         description: data.description || '',
       });
       await loadDocuments();
-    } catch (err) {
+    } catch {
       setError('Failed to load project');
     } finally {
       setIsLoading(false);

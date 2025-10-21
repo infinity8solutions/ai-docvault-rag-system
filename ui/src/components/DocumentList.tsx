@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { FileText, Image, File, Download, Trash2, Loader2, Database } from 'lucide-react';
+import { FileText, Image as ImageIcon, File, Download, Trash2, Loader2, Database } from 'lucide-react';
 import { Document } from '@/lib/document';
 import Modal from './Modal';
 
@@ -36,7 +36,7 @@ const formatDate = (dateString: string): string => {
 const getFileIcon = (fileType: string) => {
   switch (fileType) {
     case 'image':
-      return <Image className="w-8 h-8 text-purple-600" />;
+      return <ImageIcon className="w-8 h-8 text-purple-600" />;
     case 'document':
       return <FileText className="w-8 h-8 text-blue-600" />;
     default:
